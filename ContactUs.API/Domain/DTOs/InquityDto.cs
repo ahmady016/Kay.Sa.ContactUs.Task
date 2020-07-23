@@ -5,6 +5,8 @@ namespace Domain
 {
   public class InquiryDto
   {
+    public long? Id { get; set; }
+
     [Required]
     [MinLength(5)]
     [MaxLength(100)]
