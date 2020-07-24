@@ -13,7 +13,7 @@ function Header({ title }) {
 		<header>
 			<AppBar position="static">
 				<Toolbar className="flex-between">
-					<div className="flex-b-30 flex">
+					<div className="flex-b-40 flex">
 						<IconButton edge="start" color="inherit" aria-label="menu">
 							<MenuIcon />
 						</IconButton>

@@ -4,6 +4,8 @@ import { Link as RouterLink } from 'react-router-dom'
 import { useSelector } from 'react-redux'
 import request from '../_helpers/request'
 
+import SearchForm from './SearchForm'
+
 import CircularProgress from '@material-ui/core/CircularProgress'
 
 import Paper from '@material-ui/core/Paper'
@@ -19,7 +21,6 @@ import ImageIcon from '@material-ui/icons/Image'
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction'
 import IconButton from '@material-ui/core/IconButton'
 import DeleteIcon from '@material-ui/icons/Delete'
-import EditIcon from '@material-ui/icons/Edit'
 import Divider from '@material-ui/core/Divider'
 
 import Alert from '@material-ui/lab/Alert'
@@ -72,7 +73,8 @@ function InquiryItem({ id, name, email, phone, message }) {
 }
 
 function InquiriesList() {
-  const [pageNumber, setPageNumber] = React.useState(1)
+	const [whereClause, setWhereClause] = React.useState('')
+	const [pageNumber, setPageNumber] = React.useState(1)
 
 	const { getInquiriesPageUI, inquiries } = useSelector((state) => ({
 		getInquiriesPageUI: state.inquiries.getInquiriesPageUI,
@@ -87,12 +89,25 @@ function InquiriesList() {
     window.addEventListener('scroll', handleScroll)
 
 		request({
-      request: ['get', `/Inquiries/ListPage/existed?pageSize=10&pageNumber=${pageNumber}`],
+      request: ['get', `/Inquiries/ListPage/existed?pageSize=10&pageNumber=1`],
 			baseAction: 'inquiries/getInquiriesPage',
     })
 
     return () => window.removeEventListener('scroll', handleScroll)
 	}, [])
+
+	React.useEffect(() => {
+		if(whereClause)
+			request({
+				request: ['get', `/Inquiries/QueryList?where=${whereClause}&pageSize=10&pageNumber=${pageNumber}`],
+				baseAction: 'inquiries/getInquiriesPage',
+			})
+		else
+			request({
+				request: ['get', `/Inquiries/ListPage/existed?pageSize=10&pageNumber=${pageNumber}`],
+				baseAction: 'inquiries/getInquiriesPage',
+			})
+	}, [whereClause, pageNumber])
 
 	if (getInquiriesPageUI.loading)
 		return (
@@ -108,6 +123,9 @@ function InquiriesList() {
 
 	return (
 		<>
+			<Paper className="p-1">
+				<SearchForm setWhereClause={setWhereClause} setPageNumber={setPageNumber} />
+			</Paper>
 			<Paper className="flex-between p-1">
 				<Chip
 					color="default"
